@@ -9,13 +9,7 @@ class Message extends Component {
             alignItems: 'center',
             justifyContent: 'center'
         }}>
-            <Text>Home Screen</Text>
-            <Button
-                title="To User Screen"
-                onPress={()=>{
-                    this.props.navigation.navigate('User')
-                }}
-            />
+            <Text>Message Screen</Text>
         </View>
     )
   }

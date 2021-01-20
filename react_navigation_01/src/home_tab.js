@@ -11,9 +11,9 @@ class HomeTab extends Component {
         }}>
             <Text>Home Screen</Text>
             <Button
-                title="To User Screen"
+                title="Go To Home Stack"
                 onPress={()=>{
-                    this.props.navigation.navigate('User')
+                    this.props.navigation.navigate('Home_Stack')
                 }}
             />
         </View>

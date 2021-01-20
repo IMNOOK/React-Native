@@ -16,7 +16,7 @@ import {
   Button,
   Linking,
 } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DrawerActions, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { 
@@ -25,8 +25,8 @@ import {
   DrawerItemList,
   DrawerItem
 } from '@react-navigation/drawer'
-import HomeScreen from './src/home'
-import UserScreen from './src/user'
+import StackHomeScreen from './src/home'
+import StackUserScreen from './src/user'
 import LogoTitle from './src/logo'
 import DrawerHomeScreen from './src/home_drawer'
 import DrawerUserScreen from './src/user_drawer'
@@ -36,10 +36,68 @@ import TabUserScreen from './src/user_tab'
 import TabMessage from './src/message_tab'
 import Icon from 'react-native-vector-icons/dist/Ionicons'
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
+
+
+/*
+  Stack Navigator
+  -Drawer Navigator
+    -Drawer Screen
+    -Tab Navigator
+      -Tab Screen A
+  -Stack Screen B
+*/
+
+const Tabcomponent  = () => {
+  return (
+    <Tab.Navigator
+          initialRouteName="Home"
+          tabBarOptions={{
+            activeBackgroundColor: 'skyblue',
+            activeTintColor: 'blue',
+            inactiveBackgroundColor: '#fff',
+            style: {
+              backgroundColor: '#c6cbef'
+            },
+            labelPosition: 'beside-icon'
+          }}
+          screenOptions ={({route})=>({
+            tabBarLabel: route.name,
+            tabBarIcon: ({focused}) => (
+              tabBarIcon(focused, route.name)
+            )
+          })}
+        >
+          <Tab.Screen name="Home" component={TabHomeScreen}/>
+          <Tab.Screen name="User" component={TabUserScreen}/>
+          <Tab.Screen name="Message" component={TabMessage}/>
+        </Tab.Navigator>
+  )
+}
+
+const DrawerComponent = () => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="Home"
+      drawerType="front"
+      drawerPosition="left"
+      drawerStyle={{
+        backgroundColor: 'white',
+        width: 200
+      }}
+      drawerContent={props=> <CustomDrawerContent{...props}/>}
+      //drawerContent={props=> <SideDrawer{...props}/> }
+
+    >
+      <Drawer.Screen name="Route" component={Tabcomponent}/>
+      <Drawer.Screen name="User" component={DrawerUserScreen}/>
+    </Drawer.Navigator>
+  )
+}
 
 const tabBarIcon = (focused, name) => {
   let iconImagePath;
@@ -91,6 +149,21 @@ CustomDrawerContent = (props) => {
   )
 }
 
+const HeaderRight = () => {
+  const navigationss = useNavigation();
+  return (
+    <View style={{flexDirection: 'row', paddingRight: 15}}>
+      <TouchableOpacity
+        onPres={()=>{
+          navigationss.dispatch(DrawerActions.openDrawer())
+        }}
+      >
+        <Text>Open</Text>
+      </TouchableOpacity>
+    </View>
+  )
+}
+
 class App extends Component {  
 
   logoTitle = () => {
@@ -105,48 +178,17 @@ class App extends Component {
   render () {
     return (
       <NavigationContainer>
-        <Tab.Navigator
-          initialRouteName="Home"
-          tabBarOptions={{
-            activeBackgroundColor: 'skyblue',
-            activeTintColor: 'blue',
-            inactiveBackgroundColor: '#fff',
-            style: {
-              backgroundColor: '#c6cbef'
-            },
-            labelPosition: 'beside-icon'
-          }}
-          screenOptions ={({route})=>({
-            tabBarLabel: route.name,
-            tabBarIcon: ({focused}) => (
-              tabBarIcon(focused, route.name)
-            )
-          })}
-        >
-          <Tab.Screen name="Home" component={TabHomeScreen}/>
-          <Tab.Screen name="User" component={TabUserScreen}/>
-          <Tab.Screen name="Message" component={TabMessage}/>
-        </Tab.Navigator>
+        <Stack.Navigator initialRouteName="Main">
+          <Stack.Screen 
+            name="Main" 
+            component={DrawerComponent}
+            options={{
+              headerRight: ({}) => <HeaderRight/>
+            }} 
+          />
+          <Stack.Screen name="Home_Stack" component={StackHomeScreen} />
+        </Stack.Navigator>
       </NavigationContainer>
-
-      // Drawer
-      // <NavigationContainer>
-      //   <Drawer.Navigator
-      //     initialRouteName="Home"
-      //     drawerType="front"
-      //     drawerPosition="left"
-      //     drawerStyle={{
-      //       backgroundColor: 'white',
-      //       width: 200
-      //     }}
-      //     drawerContent={props=> <CustomDrawerContent{...props}/>}
-      //     //drawerContent={props=> <SideDrawer{...props}/> }
-
-      //   >
-      //     <Drawer.Screen name="Home" component={DrawerHomeScreen}/>
-      //     <Drawer.Screen name="User" component={DrawerUserScreen}/>
-      //   </Drawer.Navigator>
-      // </NavigationContainer>
 
       // Stack
       // <NavigationContainer>
